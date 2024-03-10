@@ -1,4 +1,3 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,9 +9,42 @@
     <h1>Email Classifier</h1>
     <form action="/classify" method="post">
         <label for="content">Enter Email Content:</label><br>
-        <textarea id="content" name="content" rows="4" cols="50"></textarea><br><br>
+        <!-- Change name attribute to content[] to allow multiple values -->
+        <div id="emailInputs">
+            <div class="emailInput">
+                <input type="text" name="serialNumber[]" value="Email 1" readonly> <!-- Serial number -->
+                <textarea name="content[]" rows="4" cols="50"></textarea> <!-- Email content -->
+            </div>
+        </div>
+        <button type="button" onclick="addEmail()">Add Another Email</button><br><br>
         <input type="submit" value="Classify">
     </form>
     {% block content %}{% endblock %}
+    
+    <script>
+        // Function to add another email input field
+        function addEmail() {
+            var emailInputs = document.getElementById("emailInputs");
+            var serialNumber = emailInputs.children.length + 1;
+            
+            var div = document.createElement("div");
+            div.className = "emailInput";
+            
+            var serialNumberInput = document.createElement("input");
+            serialNumberInput.type = "text";
+            serialNumberInput.name = "serialNumber[]";
+            serialNumberInput.value = "Email " + serialNumber;
+            serialNumberInput.readOnly = true;
+            div.appendChild(serialNumberInput);
+            
+            var textarea = document.createElement("textarea");
+            textarea.name = "content[]";
+            textarea.rows = "4";
+            textarea.cols = "50";
+            div.appendChild(textarea);
+            
+            emailInputs.appendChild(div);
+        }
+    </script>
 </body>
 </html>

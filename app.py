@@ -1,24 +1,6 @@
-# app.py
 from flask import Flask, render_template, request
-from load_model import load_your_model, load_your_vectorizer
 
 app = Flask(__name__)
-
-# Mock functions for loading model and vectorizer
-def load_your_model(model_path):
-    # Replace with your actual loading logic
-    return "Mock Model"
-
-def load_your_vectorizer(vectorizer_path):
-    # Replace with your actual loading logic
-    return "Mock Vectorizer"
-
-# Load your trained model and TF-IDF vectorizer
-model_path = "email_classification_app/path/to/your/model.pkl"
-vectorizer_path = "email_classification_app/path/to/your/vectorizer.pkl"
-
-model = load_your_model(model_path)
-tfidf_vectorizer = load_your_vectorizer(vectorizer_path)
 
 @app.route('/')
 def home():
@@ -27,7 +9,7 @@ def home():
 @app.route('/classify', methods=['POST'])
 def classify():
     if request.method == 'POST':
-        content = request.form['content']
+        contents = request.form.getlist('content[]')  # Retrieve multiple email contents
 
         # Check for different categories using a rule-based approach
         categories = {
@@ -39,16 +21,27 @@ def classify():
             # Add more categories as needed
         }
 
-        # Initialize default category
-        prediction = "Other"
+        # Initialize list to store predictions for each email
+        predictions = []
 
-        # Check for category keywords
-        for category, keywords in categories.items():
-            if any(keyword in content.lower() for keyword in keywords):
-                prediction = category
-                break
+        # Iterate over each email content
+        for content in contents:
+            # Initialize default category for the current email
+            prediction = "Other"
 
-        return render_template('result.html', prediction=prediction)
+            # Check for category keywords
+            for category, keywords in categories.items():
+                if any(keyword in content.lower() for keyword in keywords):
+                    prediction = category
+                    break
+            
+            # Add prediction for the current email to the list
+            predictions.append(prediction)
+
+        # Add serial numbers to predictions
+        predictions_with_serial = [(i + 1, prediction) for i, prediction in enumerate(predictions)]
+
+        return render_template('result.html', predictions=predictions_with_serial)
 
 if __name__ == '__main__':
     app.run(debug=True)

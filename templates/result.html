@@ -1,7 +1,11 @@
-<!-- templates/result.html -->
 {% extends 'index.html' %}
 
 {% block content %}
     <h1>Classification Result</h1>
-    <p>The email is classified as: {{ prediction }}</p>
+    <p>Classification Results:</p>
+    <ol>
+        {% for serial_number, prediction in predictions %}
+            <li>The email is classified as: {{ prediction }}</li>
+        {% endfor %}
+    </ol>
 {% endblock %}
